@@ -362,37 +362,11 @@
 	letter-spacing: 0.05em;
 }
 
+/* 移除骨架屏相关样式 */
 .misty-banner-imgwrap {
 	position: relative;
 	width: 100%;
 	height: 100%;
-}
-.misty-banner-skeleton {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	background: linear-gradient(90deg, #e0e0e0 25%, #f5f5f5 50%, #e0e0e0 75%);
-	background-size: 200% 100%;
-	animation: skeleton-loading 1.2s infinite linear;
-	z-index: 1;
-	border-radius: 0.6em;
-}
-@keyframes skeleton-loading {
-	0% { background-position: 200% 0; }
-	100% { background-position: -200% 0; }
-}
-.misty-banner-imgwrap img {
-	display: block;
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	position: relative;
-	z-index: 2;
-	transition: opacity 0.4s;
-	opacity: 0;
-}
-.misty-banner-imgwrap img.loaded {
-	opacity: 1;
 }
 
 .misty-banner-title {

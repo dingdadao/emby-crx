@@ -144,7 +144,6 @@ class Home {
 			const itemHtml = `
 			<div class="misty-banner-item" id="${detail.Id}">
 				<div class="misty-banner-imgwrap">
-					<div class="misty-banner-skeleton"></div>
 					<img draggable="false" loading="eager" decoding="async" class="misty-banner-cover" src="${imgUrl}" alt="Backdrop" style="">
 				</div>
 				<div class="misty-banner-info padded-left padded-right">
@@ -167,16 +166,9 @@ class Home {
 		// 立即移除 loading（只等数据，不等图片）
 		$(".misty-loading").fadeOut(500, () => $(".misty-loading").remove());
 
-		// 图片骨架渐进加载 + 失败兜底
-		$(".misty-banner-cover").each(function() {
-			$(this).on("load", function() {
-				$(this).addClass("loaded");
-				$(this).siblings(".misty-banner-skeleton").fadeOut(300, function() { $(this).remove(); });
-			}).on("error", function() {
-				$(this).attr("src", "static/img/icon.png");
-				$(this).addClass("loaded");
-				$(this).siblings(".misty-banner-skeleton").fadeOut(300, function() { $(this).remove(); });
-			});
+		// 移除骨架屏相关事件，图片加载失败兜底保留
+		$(".misty-banner-cover").on("error", function() {
+			$(this).attr("src", "static/img/icon.png");
 		});
 
 		// 预加载后续图片，提升切换体验
