@@ -146,9 +146,7 @@ class Home {
 				<div class="misty-banner-imgwrap">
 					<img draggable="false" loading="eager" decoding="async" class="misty-banner-cover" data-id="${detail.Id}" src="${imgUrl}" alt="Backdrop" style="">
 				</div>
-				<div class="misty-banner-info padded-left padded-right">
-					<div><p class="misty-banner-overview">${overview}</p></div>
-				</div>
+				<div class="misty-banner-info padded-left padded-right"></div>
 			</div>
 			`;
 			const logoHtml = `
@@ -175,8 +173,8 @@ class Home {
 			img.src = url;
 		});
 
-		// 绑定图片点击事件，跳转到详情页
-		$(document).off("click", ".misty-banner-cover").on("click", ".misty-banner-cover", function(e) {
+		// 绑定图片点击事件，跳转到详情页（加强事件代理，兼容所有动态图片）
+		$(document).off("click.mistyBanner").on("click.mistyBanner", ".misty-banner-cover", function(e) {
 			e.stopPropagation();
 			const id = $(this).data("id");
 			if (window.appRouter && typeof window.appRouter.showItem === "function") {
