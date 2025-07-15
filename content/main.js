@@ -152,7 +152,7 @@ class Home {
 				<div class="misty-banner-info padded-left padded-right">
 					<h1 class="misty-banner-title">${detail.Name}</h1>
 					<div><p class="misty-banner-overview">${overview}</p></div>
-					<div><button onclick="appRouter.showItem('${detail.Id}')">MORE</button></div>
+					<div><button class="misty-banner-more" data-id="${detail.Id}">MORE</button></div>
 				</div>
 			</div>
 			`;
@@ -195,6 +195,18 @@ class Home {
 		preloadImages.forEach(url => {
 			const img = new window.Image();
 			img.src = url;
+		});
+
+		// 绑定 MORE 按钮点击事件，增加日志
+		$(document).off("click", ".misty-banner-more").on("click", ".misty-banner-more", function() {
+			const id = $(this).data("id");
+			console.log("点击 MORE 按钮，id:", id, "appRouter:", typeof window.appRouter, window.appRouter);
+			if (window.appRouter && typeof window.appRouter.showItem === "function") {
+				window.appRouter.showItem(id);
+				console.log("调用 appRouter.showItem 成功，id:", id);
+			} else {
+				console.error("appRouter.showItem 不可用，id:", id, window.appRouter);
+			}
 		});
 
 		// section0 相关逻辑和轮播动画保持不变
