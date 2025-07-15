@@ -144,11 +144,9 @@ class Home {
 			const itemHtml = `
 			<div class="misty-banner-item" id="${detail.Id}">
 				<div class="misty-banner-imgwrap">
-					<img draggable="false" loading="eager" decoding="async" class="misty-banner-cover" src="${imgUrl}" alt="Backdrop" style="">
+					<img draggable="false" loading="eager" decoding="async" class="misty-banner-cover" data-id="${detail.Id}" src="${imgUrl}" alt="Backdrop" style="">
 				</div>
 				<div class="misty-banner-info padded-left padded-right">
-					<h1 class="misty-banner-title">${detail.Name}</h1>
-					<button class="misty-banner-more" data-id="${detail.Id}">MORE</button>
 					<div><p class="misty-banner-overview">${overview}</p></div>
 				</div>
 			</div>
@@ -177,8 +175,8 @@ class Home {
 			img.src = url;
 		});
 
-		// 绑定 MORE 按钮点击事件，跳转到媒体详情页
-		$(document).off("click", ".misty-banner-more").on("click", ".misty-banner-more", function(e) {
+		// 绑定图片点击事件，跳转到详情页
+		$(document).off("click", ".misty-banner-cover").on("click", ".misty-banner-cover", function(e) {
 			e.stopPropagation();
 			const id = $(this).data("id");
 			if (window.appRouter && typeof window.appRouter.showItem === "function") {
