@@ -187,18 +187,42 @@
 }
 
 .misty-banner-info {
-	width: 100%;
-	margin: min(.72em, max(.48em, 1.78vw));
-	margin-top: 0;
 	position: absolute;
-	top: 0;
-	z-index: 1;
+	z-index: 10;
+	width: 100%;
 	height: 100%;
-	height: -webkit-fill-available;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	box-sizing: border-box;
+}
+.misty-banner-more {
+	z-index: 11;
+	position: relative;
+	background: #fff;
+	color: #222;
+	border: none;
+	border-radius: 1.5em;
+	padding: 0.4em 1.2em;
+	font-weight: bold;
+	letter-spacing: 0.1em;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+	cursor: pointer;
+	transition: background 0.2s, color 0.2s;
+	margin-top: 1em;
+}
+.misty-banner-more:hover {
+	background: #222;
+	color: #fff;
+}
+@media screen and (max-width: 35em) {
+	.misty-banner-info {
+		padding-bottom: 2em;
+	}
+	.misty-banner-more {
+		min-width: 4em;
+		font-size: 1.1em;
+	}
 }
 
 .misty-banner-info > * {

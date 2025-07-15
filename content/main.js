@@ -134,8 +134,6 @@ class Home {
 			return;
 		}
 
-		// 渲染每个 item，包裹骨架屏，简介容错，标题多行
-		let firstImgSelector = null;
 		const preloadImages = [];
 		for (let i = 0; i < data.Items.length; i++) {
 			const item = data.Items[i];
@@ -163,21 +161,10 @@ class Home {
 				$(".misty-banner-logos").append(logoHtml);
 			}
 			$(".misty-banner-body").append(itemHtml);
-			if (i === 0) firstImgSelector = `.misty-banner-item:eq(0) .misty-banner-cover`;
-			// 预加载下一张图片
 			if (i > 0) preloadImages.push(imgUrl);
 		}
 
-		// 只等第一张图片加载完毕后移除 loading
-		await new Promise((resolve) => {
-			const $img = $(firstImgSelector);
-			if ($img[0]?.complete) {
-				resolve();
-				return;
-			}
-			$img.on("load", () => resolve());
-			$img.on("error", () => resolve());
-		});
+		// 立即移除 loading（只等数据，不等图片）
 		$(".misty-loading").fadeOut(500, () => $(".misty-loading").remove());
 
 		// 图片骨架渐进加载 + 失败兜底
@@ -187,6 +174,7 @@ class Home {
 				$(this).siblings(".misty-banner-skeleton").fadeOut(300, function() { $(this).remove(); });
 			}).on("error", function() {
 				$(this).attr("src", "static/img/icon.png");
+				$(this).addClass("loaded");
 				$(this).siblings(".misty-banner-skeleton").fadeOut(300, function() { $(this).remove(); });
 			});
 		});
@@ -197,8 +185,9 @@ class Home {
 			img.src = url;
 		});
 
-		// 绑定 MORE 按钮点击事件，增加日志
-		$(document).off("click", ".misty-banner-more").on("click", ".misty-banner-more", function() {
+		// 绑定 MORE 按钮点击事件，保证事件和层级
+		$(document).off("click", ".misty-banner-more").on("click", ".misty-banner-more", function(e) {
+			e.stopPropagation();
 			const id = $(this).data("id");
 			console.log("点击 MORE 按钮，id:", id, "appRouter:", typeof window.appRouter, window.appRouter);
 			if (window.appRouter && typeof window.appRouter.showItem === "function") {
