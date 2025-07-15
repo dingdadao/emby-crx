@@ -198,25 +198,29 @@
 }
 .misty-banner-more {
 	z-index: 11;
-	position: relative;
-	background: #fff;
-	color: #222;
-	border: none;
+	position: static;
+	display: block;
+	margin: 0.6em auto 0 auto;
+	background: linear-gradient(90deg, #4fd1c5 60%, #38b2ac 100%);
+	color: #fff;
+	border: 2px solid #fff;
 	border-radius: 1.5em;
-	padding: 0.4em 1.2em;
+	padding: 0.4em 1.6em;
 	font-weight: bold;
 	letter-spacing: 0.1em;
-	box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+	box-shadow: 0 4px 16px rgba(0,0,0,0.18);
 	cursor: pointer;
-	transition: background 0.2s, color 0.2s;
-	margin-top: 1em;
+	transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+	font-size: 1.1em;
 }
 .misty-banner-more:hover {
 	background: #222;
 	color: #fff;
+	box-shadow: 0 6px 24px rgba(0,0,0,0.28);
+	border-color: #4fd1c5;
 }
 @media screen and (max-width: 35em) {
-	.misty-banner-info {
+	.misty-banner-title-row {
 		padding-bottom: 2em;
 	}
 	.misty-banner-more {
@@ -369,18 +373,27 @@
 	height: 100%;
 }
 
+.misty-banner-title-row {
+	position: relative;
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+}
 .misty-banner-title {
-	color: #fff !important;
+	text-align: right;
+	margin: 0 auto 0 0;
+	max-width: 90%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: block;
 	font-size: clamp(2rem, -.362rem + 6.75vw, 4.7rem);
 	font-weight: bolder;
-	margin: 0;
-	text-shadow: 0 4px 10px rgb(0 0 0 / 20%);
-	max-width: 90%;
-	white-space: normal;
-	overflow: hidden;
-	display: -webkit-box;
-	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 2;
+	color: #fff !important;
+	text-shadow: 0 4px 16px rgba(0,0,0,0.7), 0 2px 4px rgba(0,0,0,0.5);
+	background: linear-gradient(90deg, rgba(0,0,0,0.65) 60%, rgba(0,0,0,0.2) 100%);
+	border-radius: 0.5em;
+	padding: 0.2em 1.2em 0.2em 0.6em;
 }
 .misty-banner-overview {
 	color: #fff !important;

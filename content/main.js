@@ -148,8 +148,8 @@ class Home {
 				</div>
 				<div class="misty-banner-info padded-left padded-right">
 					<h1 class="misty-banner-title">${detail.Name}</h1>
+					<button class="misty-banner-more" data-id="${detail.Id}">MORE</button>
 					<div><p class="misty-banner-overview">${overview}</p></div>
-					<div><button class="misty-banner-more" data-id="${detail.Id}">MORE</button></div>
 				</div>
 			</div>
 			`;
@@ -177,16 +177,14 @@ class Home {
 			img.src = url;
 		});
 
-		// 绑定 MORE 按钮点击事件，保证事件和层级
+		// 绑定 MORE 按钮点击事件，跳转到媒体详情页
 		$(document).off("click", ".misty-banner-more").on("click", ".misty-banner-more", function(e) {
 			e.stopPropagation();
 			const id = $(this).data("id");
-			console.log("点击 MORE 按钮，id:", id, "appRouter:", typeof window.appRouter, window.appRouter);
 			if (window.appRouter && typeof window.appRouter.showItem === "function") {
 				window.appRouter.showItem(id);
-				console.log("调用 appRouter.showItem 成功，id:", id);
 			} else {
-				console.error("appRouter.showItem 不可用，id:", id, window.appRouter);
+				window.location.href = `/web/index.html#!/item?id=${id}`;
 			}
 		});
 
