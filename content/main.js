@@ -124,44 +124,59 @@ class Home {
 		</div>
 		`;
 		$(".view:not(.hide) .homeSectionsContainer").prepend(banner);
-		// $(".view:not(.hide) .section0").detach().appendTo(".view:not(.hide) .misty-banner-library");
 
 		// 插入数据
 		const data = await this.getItems(this.itemQuery);
 		console.log(data);
-		data.Items.forEach(async (item) => {
-			const detail = await this.getItem(item.Id),
-				itemHtml = `
+		// 新增：无数据时友好提示
+		if (!data.Items || data.Items.length === 0) {
+			$(".misty-loading").fadeOut(500, () => $(".misty-loading").remove());
+			$(".misty-banner-body").append('<div class="misty-banner-empty">\n  <div class="misty-banner-empty-inner">\n    <span>暂无媒体内容，请前往媒体库添加影片或剧集</span>\n  </div>\n</div>');
+			return;
+		}
+
+		// 渲染每个 item，包裹骨架屏
+		for (const item of data.Items) {
+			const detail = await this.getItem(item.Id);
+			const imgUrl = await this.getImageUrl(detail.Id, this.coverOptions);
+			const logoUrl = await this.getImageUrl(detail.Id, this.logoOptions);
+			const itemHtml = `
 			<div class="misty-banner-item" id="${detail.Id}">
-				<img draggable="false" loading="eager" decoding="async" class="misty-banner-cover" src="${await this.getImageUrl(detail.Id, this.coverOptions)}" alt="Backdrop" style="">
+				<div class="misty-banner-imgwrap">
+					<div class="misty-banner-skeleton"></div>
+					<img draggable="false" loading="eager" decoding="async" class="misty-banner-cover" src="${imgUrl}" alt="Backdrop" style="">
+				</div>
 				<div class="misty-banner-info padded-left padded-right">
 					<h1>${detail.Name}</h1>
 					<div><p>${detail.Overview}</p></div>
 					<div><button onclick="appRouter.showItem('${detail.Id}')">MORE</button></div>
 				</div>
 			</div>
-			`,
-				logoHtml = `
-			<img id="${detail.Id}" draggable="false" loading="auto" decoding="lazy" class="misty-banner-logo" data-banner="img-title" alt="Logo" src="${await this.getImageUrl(detail.Id, this.logoOptions)}">
+			`;
+			const logoHtml = `
+			<img id="${detail.Id}" draggable="false" loading="auto" decoding="lazy" class="misty-banner-logo" data-banner="img-title" alt="Logo" src="${logoUrl}">
 			`;
 			if (detail.ImageTags && detail.ImageTags.Logo) {
 				$(".misty-banner-logos").append(logoHtml);
 			}
 			$(".misty-banner-body").append(itemHtml);
-			console.log(item.Id, detail);
+		}
+
+		// 移除 loading（只等数据，不等图片）
+		$(".misty-loading").fadeOut(500, () => $(".misty-loading").remove());
+
+		// 图片骨架渐进加载
+		$(".misty-banner-cover").each(function() {
+			$(this).on("load", function() {
+				$(this).addClass("loaded");
+				$(this).siblings(".misty-banner-skeleton").fadeOut(300, function() { $(this).remove(); });
+			}).on("error", function() {
+				$(this).attr("src", "static/img/icon.png");
+				$(this).siblings(".misty-banner-skeleton").fadeOut(300, function() { $(this).remove(); });
+			});
 		});
 
-		// 只判断第一张海报加载完毕, 优化加载速度
-		await new Promise((resolve, reject) => {
-			let waitLoading = setInterval(() => {
-				if (document.querySelector(".misty-banner-cover")?.complete) {
-					clearInterval(waitLoading);
-					resolve();
-				}
-			}, 16);
-		});
-
-		// 判断section0加载完毕
+		// section0 相关逻辑和轮播动画保持不变
 		await new Promise((resolve, reject) => {
 			let waitsection0 = setInterval(() => {
 				if ($(".view:not(.hide) .section0 .emby-scrollbuttons").length > 0 && $(".view:not(.hide) .section0.hide").length == 0) {
@@ -177,7 +192,6 @@ class Home {
 			$(".view:not(.hide) .section0").detach().appendTo(".view:not(.hide) .misty-banner-library");
 		}
 
-		$(".misty-loading").fadeOut(500, () => $(".misty-loading").remove());
 		await CommonUtils.sleep(150);
 		$(".view:not(.hide) .section0 .emby-scroller .itemsContainer")[0].items = items;
 
