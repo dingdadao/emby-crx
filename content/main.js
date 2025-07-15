@@ -128,18 +128,21 @@ class Home {
 		// 插入数据
 		const data = await this.getItems(this.itemQuery);
 		console.log(data);
-		// 新增：无数据时友好提示
 		if (!data.Items || data.Items.length === 0) {
 			$(".misty-loading").fadeOut(500, () => $(".misty-loading").remove());
 			$(".misty-banner-body").append('<div class="misty-banner-empty">\n  <div class="misty-banner-empty-inner">\n    <span>暂无媒体内容，请前往媒体库添加影片或剧集</span>\n  </div>\n</div>');
 			return;
 		}
 
-		// 渲染每个 item，包裹骨架屏
-		for (const item of data.Items) {
+		// 渲染每个 item，包裹骨架屏，简介容错，标题多行
+		let firstImgSelector = null;
+		const preloadImages = [];
+		for (let i = 0; i < data.Items.length; i++) {
+			const item = data.Items[i];
 			const detail = await this.getItem(item.Id);
 			const imgUrl = await this.getImageUrl(detail.Id, this.coverOptions);
 			const logoUrl = await this.getImageUrl(detail.Id, this.logoOptions);
+			const overview = detail.Overview ? detail.Overview : "暂无简介";
 			const itemHtml = `
 			<div class="misty-banner-item" id="${detail.Id}">
 				<div class="misty-banner-imgwrap">
@@ -147,8 +150,8 @@ class Home {
 					<img draggable="false" loading="eager" decoding="async" class="misty-banner-cover" src="${imgUrl}" alt="Backdrop" style="">
 				</div>
 				<div class="misty-banner-info padded-left padded-right">
-					<h1>${detail.Name}</h1>
-					<div><p>${detail.Overview}</p></div>
+					<h1 class="misty-banner-title">${detail.Name}</h1>
+					<div><p class="misty-banner-overview">${overview}</p></div>
 					<div><button onclick="appRouter.showItem('${detail.Id}')">MORE</button></div>
 				</div>
 			</div>
@@ -160,12 +163,24 @@ class Home {
 				$(".misty-banner-logos").append(logoHtml);
 			}
 			$(".misty-banner-body").append(itemHtml);
+			if (i === 0) firstImgSelector = `.misty-banner-item:eq(0) .misty-banner-cover`;
+			// 预加载下一张图片
+			if (i > 0) preloadImages.push(imgUrl);
 		}
 
-		// 移除 loading（只等数据，不等图片）
+		// 只等第一张图片加载完毕后移除 loading
+		await new Promise((resolve) => {
+			const $img = $(firstImgSelector);
+			if ($img[0]?.complete) {
+				resolve();
+				return;
+			}
+			$img.on("load", () => resolve());
+			$img.on("error", () => resolve());
+		});
 		$(".misty-loading").fadeOut(500, () => $(".misty-loading").remove());
 
-		// 图片骨架渐进加载
+		// 图片骨架渐进加载 + 失败兜底
 		$(".misty-banner-cover").each(function() {
 			$(this).on("load", function() {
 				$(this).addClass("loaded");
@@ -174,6 +189,12 @@ class Home {
 				$(this).attr("src", "static/img/icon.png");
 				$(this).siblings(".misty-banner-skeleton").fadeOut(300, function() { $(this).remove(); });
 			});
+		});
+
+		// 预加载后续图片，提升切换体验
+		preloadImages.forEach(url => {
+			const img = new window.Image();
+			img.src = url;
 		});
 
 		// section0 相关逻辑和轮播动画保持不变

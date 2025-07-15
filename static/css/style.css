@@ -370,3 +370,29 @@
 .misty-banner-imgwrap img.loaded {
 	opacity: 1;
 }
+
+.misty-banner-title {
+	color: #fff !important;
+	font-size: clamp(2rem, -.362rem + 6.75vw, 4.7rem);
+	font-weight: bolder;
+	margin: 0;
+	text-shadow: 0 4px 10px rgb(0 0 0 / 20%);
+	max-width: 90%;
+	white-space: normal;
+	overflow: hidden;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+}
+.misty-banner-overview {
+	color: #fff !important;
+	font-size: clamp(.6rem, .4rem + 1vw, 1.6rem);
+	font-weight: bold;
+	max-width: 90%;
+	opacity: .7;
+	display: -webkit-box !important;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow: hidden;
+	margin: 0.2em 0 0.5em 0;
+}
