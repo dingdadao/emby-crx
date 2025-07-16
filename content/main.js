@@ -370,14 +370,14 @@ class Home {
 			const logoUrl = await this.getImageUrl(detail.Id, this.logoOptions);
 			const overview = detail.Overview ? detail.Overview : "暂无简介";
 			const itemHtml = `
-			<div class="misty-banner-item" id="${detail.Id}">
+			<div class="misty-banner-item" id="${detail.Id}" data-serverid="${detail.ServerId}">
 				<div class="misty-banner-imgwrap">
-					<img draggable="false" loading="eager" decoding="async" class="misty-banner-cover" data-id="${detail.Id}" src="${imgUrl}" alt="Backdrop" style="">
+					<img draggable="false" loading="eager" decoding="async" class="misty-banner-cover" data-id="${detail.Id}" data-serverid="${detail.ServerId}" src="${imgUrl}" alt="Backdrop" style="">
 				</div>
 				<div class="misty-banner-info padded-left padded-right">
 					<h1>${detail.Name}</h1>
 					<div><p>${overview}</p></div>
-					<div><button onclick="appRouter.showItem('${detail.Id}')">MORE</button></div>
+					<div><button onclick="safeShowItem('${detail.Id}','${detail.ServerId}')">MORE</button></div>
 				</div>
 			</div>
 			`;
@@ -410,9 +410,10 @@ class Home {
 			e.preventDefault();
 			e.stopPropagation();
 			const id = $(this).data("id");
+			const serverId = $(this).data("serverid");
 			console.log("点击图片，ID:", id);
-			if (id && window.appRouter && typeof window.appRouter.showItem === "function") {
-				window.appRouter.showItem(id);
+			if (id) {
+				window.safeShowItem(id, serverId);
 			}
 		});
 
@@ -425,9 +426,10 @@ class Home {
 			e.preventDefault();
 			e.stopPropagation();
 			const id = $(this).attr("id");
+			const serverId = $(this).data("serverid");
 			console.log("点击海报项，ID:", id);
-			if (id && window.appRouter && typeof window.appRouter.showItem === "function") {
-				window.appRouter.showItem(id);
+			if (id) {
+				window.safeShowItem(id, serverId);
 			}
 		});
 
@@ -490,20 +492,28 @@ class Home {
 		const script = `
 		// 挂载appRouter
 		if (!window.appRouter) window.appRouter = (await window.require(["appRouter"]))[0];
-		
-		// 添加测试函数到全局
-		window.testBannerClick = function() {
-			console.log("测试海报墙点击事件...");
-			const items = document.querySelectorAll(".misty-banner-item");
-			console.log("找到海报项数量:", items.length);
-			items.forEach((item, index) => {
-				console.log(\`海报项 \${index + 1}: ID=\${item.id}\`);
-			});
-			
-			// 测试点击第一个海报项
-			if (items.length > 0) {
-				console.log("模拟点击第一个海报项...");
-				items[0].click();
+		// 注入safeShowItem
+		window.safeShowItem = function(id, serverId) {
+			function doJump() {
+				if (window.appRouter && typeof window.appRouter.showItem === 'function') {
+					window.appRouter.showItem(id, serverId);
+				} else {
+					window.location.hash = '!/item?id=' + id + '&serverId=' + serverId;
+				}
+			}
+			if (window.ApiClient && window.ApiClient.getItem) {
+				doJump();
+			} else {
+				let waited = 0;
+				const timer = setInterval(() => {
+					if (window.ApiClient && window.ApiClient.getItem) {
+						clearInterval(timer);
+						doJump();
+					} else if ((waited += 100) > 2000) {
+						clearInterval(timer);
+						doJump();
+					}
+				}, 100);
 			}
 		};
 		/* // 修复library事件参数
