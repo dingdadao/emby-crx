@@ -4,7 +4,78 @@ class Home {
 			items: undefined,
 			item: new Map(),
 		};
-		this.itemQuery = { ImageTypes: "Backdrop", EnableImageTypes: "Logo,Backdrop", IncludeItemTypes: "Movie,Series", SortBy: "ProductionYear, PremiereDate, SortName", Recursive: true, ImageTypeLimit: 1, Limit: 10, Fields: "ProductionYear", SortOrder: "Descending", EnableUserData: false, EnableTotalRecordCount: false };
+		// 基础查询参数
+		this.itemQuery = { 
+			ImageTypes: "Backdrop", 
+			EnableImageTypes: "Logo,Backdrop", 
+			IncludeItemTypes: "Movie,Series", 
+			SortBy: "ProductionYear, PremiereDate, SortName", 
+			Recursive: true, 
+			ImageTypeLimit: 1, 
+			Limit: 10, 
+			Fields: "ProductionYear", 
+			SortOrder: "Descending", 
+			EnableUserData: false, 
+			EnableTotalRecordCount: false 
+		};
+		
+		// 检测URL参数中的媒体库ID
+		const urlParams = new URLSearchParams(window.location.search);
+		const libraryId = urlParams.get('libraryId');
+		const libraryName = urlParams.get('libraryName');
+		
+		// 支持多个媒体库ID（用逗号分隔）
+		const libraryIds = urlParams.get('libraryIds');
+		const mixMode = urlParams.get('mix') === 'true'; // 混合模式
+		
+		if (libraryIds) {
+			const idArray = libraryIds.split(',').map(id => id.trim()).filter(id => id);
+			if (idArray.length > 0) {
+				if (mixMode) {
+					// 混合模式：从多个媒体库中混合获取内容
+					this.multipleLibraries = idArray;
+					console.log(`混合模式：从${idArray.length}个媒体库中混合获取内容`);
+				} else {
+					// 随机模式：从多个媒体库中随机选择一个
+					const randomId = idArray[Math.floor(Math.random() * idArray.length)];
+					this.itemQuery.ParentId = randomId;
+					console.log(`从多个媒体库中随机选择: ${randomId} (总共${idArray.length}个)`);
+				}
+			}
+		} else if (libraryId) {
+			this.itemQuery.ParentId = libraryId;
+			console.log(`指定媒体库ID: ${libraryId}`);
+		} else if (libraryName) {
+			this.itemQuery.NameStartsWithOrGreater = libraryName;
+			console.log(`指定媒体库名称: ${libraryName}`);
+		}
+		
+		// 可选：指定多个媒体库ID（取消注释并填入你的媒体库ID，用逗号分隔）
+		const multipleLibraryIds = ["5015", "5", "15292"];
+		
+		// 选择模式：true=混合模式，false=随机选择模式
+		const useMixMode = true;
+		
+		if (useMixMode) {
+			// 混合模式：从多个媒体库中混合获取内容
+			this.multipleLibraries = multipleLibraryIds;
+			console.log(`混合模式：从${multipleLibraryIds.length}个媒体库中混合获取内容`);
+		} else {
+			// 随机模式：从多个媒体库中随机选择一个
+			const randomId = multipleLibraryIds[Math.floor(Math.random() * multipleLibraryIds.length)];
+			this.itemQuery.ParentId = randomId;
+			console.log(`从多个媒体库中随机选择: ${randomId} (总共${multipleLibraryIds.length}个)`);
+		}
+		
+		// 可选：指定特定媒体库ID（取消注释并填入你的媒体库ID）
+		// this.itemQuery.ParentId = "你的媒体库ID";
+		
+		// 可选：指定媒体库名称（取消注释并填入你的媒体库名称）
+		// this.itemQuery.NameStartsWithOrGreater = "你的媒体库名称";
+		
+		// 调试：自动输出所有媒体库信息（取消注释启用）
+		// this.logAllLibraries();
+		
 		this.coverOptions = { type: "Backdrop", maxWidth: 3000 };
 		this.logoOptions = { type: "Logo", maxWidth: 3000 };
 		this.initStart = false;
@@ -98,6 +169,59 @@ class Home {
 		return this.cache.items;
 	}
 
+	// 获取媒体库列表
+	static getLibraries() {
+		return this.injectCall("getLibraries", "client.getCurrentUserId()");
+	}
+
+	// 获取特定媒体库信息
+	static getLibraryInfo(libraryId) {
+		return this.injectCall("getLibraryInfo", `client.getCurrentUserId(), "${libraryId}"`);
+	}
+
+	// 获取所有媒体库信息并输出到控制台
+	static async logAllLibraries() {
+		try {
+			const libraries = await this.getLibraries();
+			console.log("所有媒体库信息:", libraries);
+			
+			if (libraries && libraries.length > 0) {
+				console.log("媒体库列表:");
+				libraries.forEach((lib, index) => {
+					console.log(`${index + 1}. ID: ${lib.Id}, 名称: ${lib.Name}, 类型: ${lib.CollectionType}`);
+				});
+			}
+		} catch (error) {
+			console.log("获取媒体库列表失败:", error);
+		}
+	}
+
+	// 从多个媒体库中混合获取内容
+	static async getItemsFromMultipleLibraries(libraryIds, limitPerLibrary = 5) {
+		const allItems = [];
+		
+		for (const libraryId of libraryIds) {
+			try {
+				const query = { ...this.itemQuery, ParentId: libraryId, Limit: limitPerLibrary };
+				const data = await this.injectCall("getItems", "client.getCurrentUserId(), " + JSON.stringify(query));
+				if (data.Items && data.Items.length > 0) {
+					allItems.push(...data.Items);
+				}
+			} catch (error) {
+				console.log(`获取媒体库 ${libraryId} 失败:`, error);
+			}
+		}
+		
+		// 随机打乱顺序
+		for (let i = allItems.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[allItems[i], allItems[j]] = [allItems[j], allItems[i]];
+		}
+		
+		// 限制总数
+		return { Items: allItems.slice(0, this.itemQuery.Limit) };
+	}
+
 	static async getItem(itemId) {
 		// 双缓存 优先使用 WebStorage
 		if (typeof Storage !== "undefined" && !localStorage.getItem("CACHE|" + itemId) && !this.cache.item.has(itemId)) {
@@ -126,8 +250,26 @@ class Home {
 		$(".view:not(.hide) .homeSectionsContainer").prepend(banner);
 
 		// 插入数据
-		const data = await this.getItems(this.itemQuery);
-		console.log(data);
+		let data;
+		if (this.multipleLibraries) {
+			// 混合模式：从多个媒体库中混合获取
+			data = await this.getItemsFromMultipleLibraries(this.multipleLibraries, Math.ceil(this.itemQuery.Limit / this.multipleLibraries.length));
+		} else {
+			// 单媒体库模式
+			data = await this.getItems(this.itemQuery);
+		}
+		console.log("海报墙数据:", data);
+		
+		// 输出当前媒体库信息
+		if (this.itemQuery.ParentId) {
+			try {
+				const libraryInfo = await this.getLibraryInfo(this.itemQuery.ParentId);
+				console.log("当前媒体库信息:", libraryInfo);
+			} catch (error) {
+				console.log("获取媒体库信息失败:", error);
+			}
+		}
+		
 		if (!data.Items || data.Items.length === 0) {
 			$(".misty-loading").fadeOut(500, () => $(".misty-loading").remove());
 			$(".misty-banner-body").append('<div class="misty-banner-empty">\n  <div class="misty-banner-empty-inner">\n    <span>暂无媒体内容，请前往媒体库添加影片或剧集</span>\n  </div>\n</div>');
@@ -175,14 +317,53 @@ class Home {
 
 		// 绑定图片点击事件，跳转到详情页（加强事件代理，兼容所有动态图片）
 		$(document).off("click.mistyBanner").on("click.mistyBanner", ".misty-banner-cover", function(e) {
+			e.preventDefault();
 			e.stopPropagation();
 			const id = $(this).data("id");
-			if (window.appRouter && typeof window.appRouter.showItem === "function") {
-				window.appRouter.showItem(id);
-			} else {
-				window.location.href = `/web/index.html#!/item?id=${id}`;
+			console.log("点击图片，ID:", id);
+			if (id) {
+				if (window.appRouter && typeof window.appRouter.showItem === "function") {
+					window.appRouter.showItem(id);
+				} else {
+					window.location.href = `/web/index.html#!/item?id=${id}`;
+				}
 			}
 		});
+
+		// 额外绑定整个海报项的点击事件，确保点击有效
+		$(document).off("click.mistyBannerItem").on("click.mistyBannerItem", ".misty-banner-item", function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			const id = $(this).attr("id");
+			console.log("点击海报项，ID:", id);
+			if (id) {
+				if (window.appRouter && typeof window.appRouter.showItem === "function") {
+					window.appRouter.showItem(id);
+				} else {
+					window.location.href = `/web/index.html#!/item?id=${id}`;
+				}
+			}
+		});
+
+		// 绑定图片容器的点击事件
+		$(document).off("click.mistyBannerImgwrap").on("click.mistyBannerImgwrap", ".misty-banner-imgwrap", function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			const id = $(this).closest(".misty-banner-item").attr("id");
+			console.log("点击图片容器，ID:", id);
+			if (id) {
+				if (window.appRouter && typeof window.appRouter.showItem === "function") {
+					window.appRouter.showItem(id);
+				} else {
+					window.location.href = `/web/index.html#!/item?id=${id}`;
+				}
+			}
+		});
+
+		// 添加鼠标样式，提示可点击
+		$(".misty-banner-item").css("cursor", "pointer");
+		$(".misty-banner-imgwrap").css("cursor", "pointer");
+		$(".misty-banner-cover").css("cursor", "pointer");
 
 		// section0 相关逻辑和轮播动画保持不变
 		await new Promise((resolve, reject) => {
@@ -238,6 +419,22 @@ class Home {
 		const script = `
 		// 挂载appRouter
 		if (!window.appRouter) window.appRouter = (await window.require(["appRouter"]))[0];
+		
+		// 添加测试函数到全局
+		window.testBannerClick = function() {
+			console.log("测试海报墙点击事件...");
+			const items = document.querySelectorAll(".misty-banner-item");
+			console.log("找到海报项数量:", items.length);
+			items.forEach((item, index) => {
+				console.log(\`海报项 \${index + 1}: ID=\${item.id}\`);
+			});
+			
+			// 测试点击第一个海报项
+			if (items.length > 0) {
+				console.log("模拟点击第一个海报项...");
+				items[0].click();
+			}
+		};
 		/* // 修复library事件参数
 		const serverId = ApiClient._serverInfo.Id,
 			librarys = document.querySelectorAll(".view:not(.hide) .section0 .card");
