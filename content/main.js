@@ -1,10 +1,7 @@
 window.safeShowItem = function(id, serverId) {
     function doJump() {
-        if (window.appRouter && typeof window.appRouter.showItem === 'function') {
-            window.appRouter.showItem(id, serverId);
-        } else {
-            window.location.hash = '!/item?id=' + id + '&serverId=' + serverId;
-        }
+        const url = window.location.origin + window.location.pathname + '#!/item?id=' + id + '&serverId=' + serverId;
+        window.location.href = url;
     }
     if (window.ApiClient && window.ApiClient.getItem) {
         doJump();
@@ -393,14 +390,16 @@ class Home {
 			const imgUrl = await this.getImageUrl(detail.Id, this.coverOptions);
 			const logoUrl = await this.getImageUrl(detail.Id, this.logoOptions);
 			const overview = detail.Overview ? detail.Overview : "暂无简介";
+			// 标题最多显示15个字符，超出加省略号
+			let title = detail.Name || '';
+			if (title.length > 15) title = title.slice(0, 15) + '...';
 			const itemHtml = `
-			<button type="button" class="cardBox cardBox-touchzoom misty-banner-item" data-id="${detail.Id}" data-serverid="${detail.ServerId}" data-action="link" tabindex="0">
-				<img draggable="false" loading="eager" decoding="async" class="cardImage misty-banner-cover" data-id="${detail.Id}" data-serverid="${detail.ServerId}" src="${imgUrl}" alt="Backdrop" style="">
-				<div class="misty-banner-info padded-left padded-right">
-					<h1>${detail.Name}</h1>
-					<div><p>${overview}</p></div>
+			<div class="misty-banner-item" id="${detail.Id}" data-serverid="${detail.ServerId}">
+				<div class="misty-banner-imgwrap">
+					<img draggable="false" loading="eager" decoding="async" class="misty-banner-cover" data-id="${detail.Id}" data-serverid="${detail.ServerId}" src="${imgUrl}" alt="Backdrop" style="">
+					<div class="misty-banner-title-custom">${title}</div>
 				</div>
-			</button>
+			</div>
 			`;
 			const logoHtml = `
 			<img id="${detail.Id}" draggable="false" loading="auto" decoding="lazy" class="misty-banner-logo" data-banner="img-title" alt="Logo" src="${logoUrl}">
@@ -426,29 +425,27 @@ class Home {
 			img.src = url;
 		});
 
-		// 绑定图片点击事件，跳转到详情页（作为MORE按钮的备用）
+		// 绑定图片点击事件，跳转到详情页
 		$(document).off("click.mistyBanner").on("click.mistyBanner", ".misty-banner-cover", function(e) {
 			e.preventDefault();
 			e.stopPropagation();
 			const id = $(this).data("id");
 			const serverId = $(this).data("serverid");
-			console.log("点击图片，ID:", id);
 			if (id) {
 				window.safeShowItem(id, serverId);
 			}
 		});
 
-		// 绑定整个海报项的点击事件（作为备用）
+		// 绑定整个海报项的点击事件
 		$(document).off("click.mistyBannerItem").on("click.mistyBannerItem", ".misty-banner-item", function(e) {
-			// 如果点击的是按钮，不处理（让按钮自己的onclick处理）
-			if ($(e.target).is('button')) {
+			// 如果点击的是标题，不处理
+			if ($(e.target).hasClass('misty-banner-title-custom')) {
 				return;
 			}
 			e.preventDefault();
 			e.stopPropagation();
 			const id = $(this).attr("id");
 			const serverId = $(this).data("serverid");
-			console.log("点击海报项，ID:", id);
 			if (id) {
 				window.safeShowItem(id, serverId);
 			}
@@ -516,11 +513,8 @@ class Home {
 		// 注入safeShowItem
 		window.safeShowItem = function(id, serverId) {
 			function doJump() {
-				if (window.appRouter && typeof window.appRouter.showItem === 'function') {
-					window.appRouter.showItem(id, serverId);
-				} else {
-					window.location.hash = '!/item?id=' + id + '&serverId=' + serverId;
-				}
+				const url = window.location.origin + window.location.pathname + '#!/item?id=' + id + '&serverId=' + serverId;
+				window.location.href = url;
 			}
 			if (window.ApiClient && window.ApiClient.getItem) {
 				doJump();

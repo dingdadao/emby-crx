@@ -375,6 +375,25 @@
 }
 
 /* 移除骨架屏相关样式 */
+.misty-banner-title-custom {
+	position: absolute;
+	bottom: 0.8em;
+	right: 1.2em;
+	max-width: 60%;
+	padding: 0.2em 0.8em;
+	background: rgba(0,0,0,0.45);
+	color: #fff;
+	font-size: 1.2em;
+	font-weight: bold;
+	border-radius: 0.6em 0.6em 0 0;
+	text-align: right;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	z-index: 2;
+	pointer-events: none;
+}
+
 .misty-banner-imgwrap {
 	position: relative;
 	width: 100%;
