@@ -1,7 +1,7 @@
 window.safeShowItem = function(id, serverId) {
     function doJump() {
         const url = window.location.origin + window.location.pathname + '#!/item?id=' + id + '&serverId=' + serverId;
-        window.location.href = url;
+        window.location.replace(url); // 强制刷新，不留历史
     }
     if (window.ApiClient && window.ApiClient.getItem) {
         doJump();
@@ -514,7 +514,7 @@ class Home {
 		window.safeShowItem = function(id, serverId) {
 			function doJump() {
 				const url = window.location.origin + window.location.pathname + '#!/item?id=' + id + '&serverId=' + serverId;
-				window.location.href = url;
+				window.location.replace(url); // 强制刷新，不留历史
 			}
 			if (window.ApiClient && window.ApiClient.getItem) {
 				doJump();
