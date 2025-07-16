@@ -391,15 +391,13 @@ class Home {
 			const logoUrl = await this.getImageUrl(detail.Id, this.logoOptions);
 			const overview = detail.Overview ? detail.Overview : "暂无简介";
 			let title = detail.Name || '';
-			if (title.length > 15) title = title.slice(0, 15) + '...';
+			if (title.length > 20) title = title.slice(0, 20) + '...';
 			const itemHtml = `
 			<div class="misty-banner-item" id="${detail.Id}" data-serverid="${detail.ServerId}">
 				<div class="misty-banner-imgwrap">
 					<img draggable="false" loading="eager" decoding="async" class="misty-banner-cover" data-id="${detail.Id}" data-serverid="${detail.ServerId}" src="${imgUrl}" alt="Backdrop" style="">
-					<div class="misty-banner-title-btn-wrap">
-						<div class="misty-banner-title-custom">${title}</div>
-						<button class="misty-banner-more-btn" onclick="if(window.appRouter && typeof window.appRouter.showItem==='function'){window.appRouter.showItem('${detail.Id}','${detail.ServerId}');}">MORE</button>
-					</div>
+					<div class="misty-banner-title-left">${title}</div>
+					<button class="misty-banner-more-btn-right" onclick="if(window.appRouter && typeof window.appRouter.showItem==='function'){window.appRouter.showItem('${detail.Id}','${detail.ServerId}');}">MORE</button>
 				</div>
 			</div>
 			`;
