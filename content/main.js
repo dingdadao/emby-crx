@@ -1,3 +1,27 @@
+window.safeShowItem = function(id, serverId) {
+    function doJump() {
+        if (window.appRouter && typeof window.appRouter.showItem === 'function') {
+            window.appRouter.showItem(id, serverId);
+        } else {
+            window.location.hash = '!/item?id=' + id + '&serverId=' + serverId;
+        }
+    }
+    if (window.ApiClient && window.ApiClient.getItem) {
+        doJump();
+    } else {
+        let waited = 0;
+        const timer = setInterval(() => {
+            if (window.ApiClient && window.ApiClient.getItem) {
+                clearInterval(timer);
+                doJump();
+            } else if ((waited += 100) > 2000) {
+                clearInterval(timer);
+                doJump();
+            }
+        }, 100);
+    }
+};
+
 class Home {
 	static start() {
 		this.cache = {
