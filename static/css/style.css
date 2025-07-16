@@ -393,12 +393,7 @@
 	pointer-events: none;
 }
 
-/* 移除标题和按钮相关样式 */
-.misty-banner-title,
-.misty-banner-more,
-.misty-banner-title-row {
-	display: none !important;
-}
+/* 标题和按钮样式已恢复显示 */
 
 .misty-banner-overview {
 	color: #fff !important;

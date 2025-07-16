@@ -374,7 +374,11 @@ class Home {
 				<div class="misty-banner-imgwrap">
 					<img draggable="false" loading="eager" decoding="async" class="misty-banner-cover" data-id="${detail.Id}" src="${imgUrl}" alt="Backdrop" style="">
 				</div>
-				<div class="misty-banner-info padded-left padded-right"></div>
+				<div class="misty-banner-info padded-left padded-right">
+					<h1>${detail.Name}</h1>
+					<div><p>${overview}</p></div>
+					<div><button onclick="appRouter.showItem('${detail.Id}')">MORE</button></div>
+				</div>
 			</div>
 			`;
 			const logoHtml = `
@@ -401,36 +405,29 @@ class Home {
 			img.src = url;
 		});
 
-		// 绑定图片点击事件，跳转到详情页（加强事件代理，兼容所有动态图片）
+		// 绑定图片点击事件，跳转到详情页（作为MORE按钮的备用）
 		$(document).off("click.mistyBanner").on("click.mistyBanner", ".misty-banner-cover", function(e) {
 			e.preventDefault();
 			e.stopPropagation();
 			const id = $(this).data("id");
 			console.log("点击图片，ID:", id);
-			if (id) {
-				Home.safeNavigateToItem(id);
+			if (id && window.appRouter && typeof window.appRouter.showItem === "function") {
+				window.appRouter.showItem(id);
 			}
 		});
 
-		// 额外绑定整个海报项的点击事件，确保点击有效
+		// 绑定整个海报项的点击事件（作为备用）
 		$(document).off("click.mistyBannerItem").on("click.mistyBannerItem", ".misty-banner-item", function(e) {
+			// 如果点击的是按钮，不处理（让按钮自己的onclick处理）
+			if ($(e.target).is('button')) {
+				return;
+			}
 			e.preventDefault();
 			e.stopPropagation();
 			const id = $(this).attr("id");
 			console.log("点击海报项，ID:", id);
-			if (id) {
-				Home.safeNavigateToItem(id);
-			}
-		});
-
-		// 绑定图片容器的点击事件
-		$(document).off("click.mistyBannerImgwrap").on("click.mistyBannerImgwrap", ".misty-banner-imgwrap", function(e) {
-			e.preventDefault();
-			e.stopPropagation();
-			const id = $(this).closest(".misty-banner-item").attr("id");
-			console.log("点击图片容器，ID:", id);
-			if (id) {
-				Home.safeNavigateToItem(id);
+			if (id && window.appRouter && typeof window.appRouter.showItem === "function") {
+				window.appRouter.showItem(id);
 			}
 		});
 
