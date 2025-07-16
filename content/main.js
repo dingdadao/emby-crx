@@ -239,41 +239,86 @@ class Home {
 	// 安全的跳转到详情页方法
 	static async safeNavigateToItem(itemId) {
 		try {
-			// 等待API客户端完全初始化，最多等待2秒
-			let apiReady = false;
-			await new Promise((resolve) => {
-				const checkApiClient = () => {
-					if (window.ApiClient && window.ApiClient.isInitialized && window.ApiClient.isInitialized()) {
-						apiReady = true;
-						resolve();
-					} else {
-						setTimeout(checkApiClient, 50);
-					}
-				};
-				
-				// 设置超时
-				setTimeout(() => {
-					if (!apiReady) {
-						console.log("API客户端初始化超时，使用备用跳转");
-						resolve();
-					}
-				}, 2000);
-				
-				checkApiClient();
-			});
-
-			// 如果API客户端准备好且appRouter可用，使用appRouter
-			if (apiReady && window.appRouter && typeof window.appRouter.showItem === "function") {
-				console.log("使用appRouter跳转到详情页");
-				window.appRouter.showItem(itemId);
-			} else {
-				// 备用方案：直接修改URL
-				console.log("使用URL跳转到详情页");
-				window.location.href = `/web/index.html#!/item?id=${itemId}`;
-			}
+			console.log("开始跳转到详情页，ID:", itemId);
+			
+			// 优先使用Emby内置路由
+			await this.navigateWithEmbyRouter(itemId);
+			
 		} catch (error) {
-			console.log("跳转失败，使用备用方案:", error);
-			window.location.href = `/web/index.html#!/item?id=${itemId}`;
+			console.log("Emby路由跳转失败，使用备用方案:", error);
+			this.navigateToItemDirect(itemId);
+		}
+	}
+
+	// 直接跳转到详情页的方法
+	static navigateToItemDirect(itemId) {
+		try {
+			// 方式1：直接修改hash
+			console.log("方式1：修改hash");
+			window.location.hash = `!/item?id=${itemId}`;
+			
+			// 方式2：如果hash修改失败，使用完整URL
+			setTimeout(() => {
+				if (window.location.hash !== `#!/item?id=${itemId}`) {
+					console.log("方式2：使用完整URL");
+					const currentUrl = window.location.href;
+					const baseUrl = currentUrl.split('#!/')[0];
+					window.location.href = `${baseUrl}#!/item?id=${itemId}`;
+				}
+			}, 100);
+			
+			// 方式3：如果还是失败，强制刷新页面
+			setTimeout(() => {
+				if (window.location.hash !== `#!/item?id=${itemId}`) {
+					console.log("方式3：强制刷新页面");
+					const currentUrl = window.location.href;
+					const baseUrl = currentUrl.split('#!/')[0];
+					window.location.replace(`${baseUrl}#!/item?id=${itemId}`);
+				}
+			}, 500);
+			
+		} catch (error) {
+			console.log("所有跳转方式都失败:", error);
+		}
+	}
+
+	// 使用Emby内置路由跳转
+	static async navigateWithEmbyRouter(itemId) {
+		const script = `
+		try {
+			// 尝试使用appRouter
+			if (window.appRouter && typeof window.appRouter.showItem === "function") {
+				window.appRouter.showItem("${itemId}");
+				return "使用appRouter跳转";
+			}
+			
+			// 尝试使用page.js
+			if (window.page && typeof window.page.show === "function") {
+				window.page.show("/item?id=${itemId}");
+				return "使用page.js跳转";
+			}
+			
+			// 尝试使用history API
+			const currentUrl = window.location.href;
+			const baseUrl = currentUrl.split('#!/')[0];
+			const newUrl = baseUrl + "#!/item?id=${itemId}";
+			window.history.pushState({}, '', newUrl);
+			window.dispatchEvent(new PopStateEvent('popstate'));
+			return "使用history API跳转";
+			
+		} catch (error) {
+			// 最后的备用方案
+			window.location.hash = "!/item?id=${itemId}";
+			return "使用hash跳转";
+		}
+		`;
+		
+		try {
+			const result = await this.injectCode(script);
+			console.log("跳转结果:", result);
+		} catch (error) {
+			console.log("注入跳转失败，使用备用方案:", error);
+			this.navigateToItemDirect(itemId);
 		}
 	}
 
