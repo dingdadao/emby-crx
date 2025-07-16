@@ -236,6 +236,47 @@ class Home {
 		return this.injectCall("getImageUrl", itemId + ", " + JSON.stringify(options));
 	}
 
+	// 安全的跳转到详情页方法
+	static async safeNavigateToItem(itemId) {
+		try {
+			// 等待API客户端完全初始化，最多等待2秒
+			let apiReady = false;
+			await new Promise((resolve) => {
+				const checkApiClient = () => {
+					if (window.ApiClient && window.ApiClient.isInitialized && window.ApiClient.isInitialized()) {
+						apiReady = true;
+						resolve();
+					} else {
+						setTimeout(checkApiClient, 50);
+					}
+				};
+				
+				// 设置超时
+				setTimeout(() => {
+					if (!apiReady) {
+						console.log("API客户端初始化超时，使用备用跳转");
+						resolve();
+					}
+				}, 2000);
+				
+				checkApiClient();
+			});
+
+			// 如果API客户端准备好且appRouter可用，使用appRouter
+			if (apiReady && window.appRouter && typeof window.appRouter.showItem === "function") {
+				console.log("使用appRouter跳转到详情页");
+				window.appRouter.showItem(itemId);
+			} else {
+				// 备用方案：直接修改URL
+				console.log("使用URL跳转到详情页");
+				window.location.href = `/web/index.html#!/item?id=${itemId}`;
+			}
+		} catch (error) {
+			console.log("跳转失败，使用备用方案:", error);
+			window.location.href = `/web/index.html#!/item?id=${itemId}`;
+		}
+	}
+
 	/* 插入Banner */
 	static async initBanner() {
 		const banner = `
@@ -322,11 +363,7 @@ class Home {
 			const id = $(this).data("id");
 			console.log("点击图片，ID:", id);
 			if (id) {
-				if (window.appRouter && typeof window.appRouter.showItem === "function") {
-					window.appRouter.showItem(id);
-				} else {
-					window.location.href = `/web/index.html#!/item?id=${id}`;
-				}
+				Home.safeNavigateToItem(id);
 			}
 		});
 
@@ -337,11 +374,7 @@ class Home {
 			const id = $(this).attr("id");
 			console.log("点击海报项，ID:", id);
 			if (id) {
-				if (window.appRouter && typeof window.appRouter.showItem === "function") {
-					window.appRouter.showItem(id);
-				} else {
-					window.location.href = `/web/index.html#!/item?id=${id}`;
-				}
+				Home.safeNavigateToItem(id);
 			}
 		});
 
@@ -352,11 +385,7 @@ class Home {
 			const id = $(this).closest(".misty-banner-item").attr("id");
 			console.log("点击图片容器，ID:", id);
 			if (id) {
-				if (window.appRouter && typeof window.appRouter.showItem === "function") {
-					window.appRouter.showItem(id);
-				} else {
-					window.location.href = `/web/index.html#!/item?id=${id}`;
-				}
+				Home.safeNavigateToItem(id);
 			}
 		});
 
