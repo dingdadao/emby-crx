@@ -394,16 +394,13 @@ class Home {
 			const logoUrl = await this.getImageUrl(detail.Id, this.logoOptions);
 			const overview = detail.Overview ? detail.Overview : "暂无简介";
 			const itemHtml = `
-			<div class="misty-banner-item" id="${detail.Id}" data-serverid="${detail.ServerId}">
-				<div class="misty-banner-imgwrap">
-					<img draggable="false" loading="eager" decoding="async" class="misty-banner-cover" data-id="${detail.Id}" data-serverid="${detail.ServerId}" src="${imgUrl}" alt="Backdrop" style="">
-				</div>
+			<button type="button" class="cardBox cardBox-touchzoom misty-banner-item" data-id="${detail.Id}" data-serverid="${detail.ServerId}" data-action="link" tabindex="0">
+				<img draggable="false" loading="eager" decoding="async" class="cardImage misty-banner-cover" data-id="${detail.Id}" data-serverid="${detail.ServerId}" src="${imgUrl}" alt="Backdrop" style="">
 				<div class="misty-banner-info padded-left padded-right">
 					<h1>${detail.Name}</h1>
 					<div><p>${overview}</p></div>
-					<div><button onclick="safeShowItem('${detail.Id}','${detail.ServerId}')">MORE</button></div>
 				</div>
-			</div>
+			</button>
 			`;
 			const logoHtml = `
 			<img id="${detail.Id}" draggable="false" loading="auto" decoding="lazy" class="misty-banner-logo" data-banner="img-title" alt="Logo" src="${logoUrl}">
