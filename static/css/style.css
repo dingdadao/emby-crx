@@ -388,20 +388,21 @@
 
 .misty-banner-title-custom {
     max-width: 60%;
-    padding: 0.5em 1.2em;
-    background: rgba(0,0,0,0.75);
+    padding: 0.18em 0.8em;
+    background: rgba(0,0,0,0.32);
     color: #fff;
-    font-size: 2.2em;
-    font-weight: 900;
-    border-radius: 1.2em;
+    font-size: 1.15em;
+    font-weight: 500;
+    border-radius: 0.8em;
     text-align: right;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     pointer-events: none;
-    letter-spacing: 0.04em;
-    opacity: 0.98;
-    transition: background 0.2s, color 0.2s;
+    letter-spacing: 0.03em;
+    opacity: 0.92;
+    margin-bottom: 0;
+    box-shadow: none;
 }
 
 .misty-banner-imgwrap {
@@ -438,25 +439,20 @@
 }
 
 .misty-banner-more-btn {
-    position: absolute;
-    bottom: 2.2em;
-    right: 2.2em;
-    padding: 0.4em 1.4em;
-    background: rgba(0,0,0,0.85);
+    background: rgba(0,0,0,0.32);
     color: #fff;
-    font-size: 1.3em;
-    font-weight: bold;
+    font-size: 1em;
+    font-weight: 500;
     border: none;
-    border-radius: 1.2em;
+    border-radius: 0.8em;
     cursor: pointer;
-    z-index: 3;
-    opacity: 0.98;
-    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-    letter-spacing: 0.04em;
+    padding: 0.18em 1.1em;
+    opacity: 0.92;
+    transition: background 0.2s, color 0.2s;
+    box-shadow: none;
+    letter-spacing: 0.03em;
 }
 .misty-banner-more-btn:hover {
     background: #fff;
     color: #222;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.28);
 }
