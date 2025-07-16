@@ -375,10 +375,18 @@
 }
 
 /* 移除骨架屏相关样式 */
-.misty-banner-title-custom {
+.misty-banner-title-btn-wrap {
     position: absolute;
     bottom: 2.2em;
     right: 2.2em;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5em;
+    z-index: 3;
+}
+
+.misty-banner-title-custom {
     max-width: 60%;
     padding: 0.5em 1.2em;
     background: rgba(0,0,0,0.75);
@@ -390,7 +398,6 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    z-index: 2;
     pointer-events: none;
     letter-spacing: 0.04em;
     opacity: 0.98;
@@ -428,4 +435,28 @@
 	-webkit-line-clamp: 2;
 	overflow: hidden;
 	margin: 0.2em 0 0.5em 0;
+}
+
+.misty-banner-more-btn {
+    position: absolute;
+    bottom: 2.2em;
+    right: 2.2em;
+    padding: 0.4em 1.4em;
+    background: rgba(0,0,0,0.85);
+    color: #fff;
+    font-size: 1.3em;
+    font-weight: bold;
+    border: none;
+    border-radius: 1.2em;
+    cursor: pointer;
+    z-index: 3;
+    opacity: 0.98;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    letter-spacing: 0.04em;
+}
+.misty-banner-more-btn:hover {
+    background: #fff;
+    color: #222;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.28);
 }
