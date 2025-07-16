@@ -457,6 +457,15 @@
     color: #222;
 }
 
+@media (min-width: 900px) {
+  .misty-banner-title-left {
+    bottom: 40% !important;
+  }
+  .misty-banner-more-btn-right {
+    bottom: 30% !important;
+  }
+}
+
 .misty-banner-title-left {
     position: absolute;
     left: 2.2em;
