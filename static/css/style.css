@@ -511,3 +511,38 @@
     background: #fff;
     color: #222;
 }
+
+@media (max-width: 900px) {
+  .misty-banner-title-left {
+    font-size: 1.3em !important;
+    padding: 0.12em 0.5em !important;
+    border-radius: 0.5em !important;
+    left: 1em !important;
+    bottom: 12% !important;
+    max-width: 90% !important;
+  }
+  .misty-banner-more-btn-right {
+    font-size: 1em !important;
+    padding: 0.18em 1.2em !important;
+    border-radius: 0.7em !important;
+    right: 1em !important;
+    bottom: 1.2em !important;
+  }
+}
+@media (max-width: 600px) {
+  .misty-banner-title-left {
+    font-size: 1em !important;
+    padding: 0.08em 0.3em !important;
+    border-radius: 0.4em !important;
+    left: 0.5em !important;
+    bottom: 8% !important;
+    max-width: 98% !important;
+  }
+  .misty-banner-more-btn-right {
+    font-size: 0.9em !important;
+    padding: 0.12em 0.8em !important;
+    border-radius: 0.5em !important;
+    right: 0.5em !important;
+    bottom: 0.8em !important;
+  }
+}
