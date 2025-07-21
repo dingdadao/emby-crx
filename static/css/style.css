@@ -425,101 +425,94 @@
 
 /* 标题和按钮样式已恢复显示 */
 
-.misty-banner-overview {
-	color: #fff !important;
-	font-size: clamp(.6rem, .4rem + 1vw, 1.6rem);
-	font-weight: bold;
-	max-width: 90%;
-	opacity: .7;
-	display: -webkit-box !important;
-	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 2;
-	overflow: hidden;
-	margin: 0.2em 0 0.5em 0;
+/* 内容容器 */
+.misty-banner-content {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  padding: 2em;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+  z-index: 3;
 }
 
-.misty-banner-more-btn {
-    background: rgba(0,0,0,0.32);
-    color: #fff;
-    font-size: 1em;
-    font-weight: 500;
-    border: none;
-    border-radius: 0.8em;
-    cursor: pointer;
-    padding: 0.18em 1.1em;
-    opacity: 0.92;
-    transition: background 0.2s, color 0.2s;
-    box-shadow: none;
-    letter-spacing: 0.03em;
-}
-.misty-banner-more-btn:hover {
-    background: #fff;
-    color: #222;
-}
-
-@media (min-width: 900px) {
-  .misty-banner-title-left {
-    bottom: 40% !important;
-  }
-  .misty-banner-more-btn-right {
-    bottom: 30% !important;
-  }
-}
-
+/* 参考原项目风格优化标题样式 */
 .misty-banner-title-left {
-    position: absolute;
-    left: 2.2em;
-    bottom: 20%;
-    max-width: 80%;
-    padding: 0.18em 0.8em;
-    background: rgba(0,0,0,0.32);
-    color: #fff;
-    font-size: 2.3em;
-    font-weight: 500;
-    border-radius: 0.8em;
-    text-align: left;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    pointer-events: none;
-    letter-spacing: 0.03em;
-    opacity: 0.92;
-    margin-bottom: 0;
-    box-shadow: none;
-    z-index: 3;
+  position: relative;
+  left: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 0.15em 0.8em;
+  border-radius: 0.6em;
+  font-size: 1.5em;
+  font-weight: 600;
+  max-width: 80%;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  margin-bottom: 0.8em;
+  display: inline-block;
 }
 
-.misty-banner-more-btn-right {
-    position: absolute;
-    right: 2.2em;
-    bottom: 2.2em;
-    padding: 0.32em 2.2em;
-    background: rgba(0,0,0,0.32);
-    color: #fff;
-    font-size: 1.3em;
-    font-weight: 600;
-    border: none;
-    border-radius: 1.2em;
-    cursor: pointer;
-    opacity: 0.92;
-    transition: background 0.2s, color 0.2s;
-    box-shadow: none;
-    letter-spacing: 0.03em;
-    z-index: 3;
+/* 简介样式 */
+.misty-banner-overview {
+  color: #fff;
+  font-size: 1em;
+  line-height: 1.5;
+  max-width: 70%;
+  margin-bottom: 1em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  opacity: 0.95;
+  font-weight: 400;
 }
+
+/* 参考原项目风格优化按钮样式 */
+.misty-banner-more-btn-right {
+  position: absolute;
+  right: 2em;
+  bottom: 2em;
+  background: #fff;
+  color: #000;
+  padding: 0.25em 1.5em;
+  border-radius: 0.8em;
+  font-size: 1.1em;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border: none;
+  cursor: pointer;
+}
+
 .misty-banner-more-btn-right:hover {
-    background: #fff;
-    color: #222;
+  background: #f0f0f0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* 优化标题悬停效果 */
+.misty-banner-title-left:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 @media (max-width: 900px) {
+  .misty-banner-content {
+    padding: 1.5em;
+  }
   .misty-banner-title-left {
     font-size: 1.3em !important;
     padding: 0.12em 0.5em !important;
     border-radius: 0.5em !important;
-    left: 1em !important;
-    bottom: 12% !important;
-    max-width: 90% !important;
+    margin-bottom: 0.6em !important;
+  }
+  .misty-banner-overview {
+    font-size: 0.9em !important;
+    max-width: 85% !important;
+    margin-bottom: 0.8em !important;
   }
   .misty-banner-more-btn-right {
     font-size: 1em !important;
@@ -530,13 +523,20 @@
   }
 }
 @media (max-width: 600px) {
+  .misty-banner-content {
+    padding: 1em;
+  }
   .misty-banner-title-left {
     font-size: 1em !important;
     padding: 0.08em 0.3em !important;
     border-radius: 0.4em !important;
-    left: 0.5em !important;
-    bottom: 8% !important;
-    max-width: 98% !important;
+    margin-bottom: 0.5em !important;
+  }
+  .misty-banner-overview {
+    font-size: 0.8em !important;
+    max-width: 95% !important;
+    margin-bottom: 0.6em !important;
+    line-height: 1.4 !important;
   }
   .misty-banner-more-btn-right {
     font-size: 0.9em !important;

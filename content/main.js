@@ -391,13 +391,24 @@ class Home {
 			const logoUrl = await this.getImageUrl(detail.Id, this.logoOptions);
 			const overview = detail.Overview ? detail.Overview : "暂无简介";
 			let title = detail.Name || '';
-			if (title.length > 20) title = title.slice(0, 20) + '...';
+			let shortTitle = title;
+			if (title.length > 20) shortTitle = title.slice(0, 20) + '...';
+			
+			// 处理简介，限制长度并添加省略号
+			let shortOverview = overview;
+			if (overview.length > 120) {
+				shortOverview = overview.slice(0, 120) + '...';
+			}
+			
 			const itemHtml = `
 			<div class="misty-banner-item" id="${detail.Id}" data-serverid="${detail.ServerId}">
 				<div class="misty-banner-imgwrap">
 					<img draggable="false" loading="eager" decoding="async" class="misty-banner-cover" data-id="${detail.Id}" data-serverid="${detail.ServerId}" src="${imgUrl}" alt="Backdrop" style="">
-					<div class="misty-banner-title-left">${title}</div>
-					<button class="misty-banner-more-btn-right" onclick="if(window.appRouter && typeof window.appRouter.showItem==='function'){window.appRouter.showItem('${detail.Id}','${detail.ServerId}');}">MORE</button>
+					<div class="misty-banner-content">
+						<div class="misty-banner-title-left">${shortTitle}</div>
+						<div class="misty-banner-overview">${shortOverview}</div>
+						<button class="misty-banner-more-btn-right" onclick="if(window.appRouter && typeof window.appRouter.showItem==='function'){window.appRouter.showItem('${detail.Id}','${detail.ServerId}');}">MORE</button>
+					</div>
 				</div>
 			</div>
 			`;
